@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PAPER - TAX AND TECHNOLOGY 2</title>
+    <style>
+        /* styles for the header, main, and footer sections */
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #fff;
+            padding: 20px 0;
+            box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
+            text-align: center;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+    
+</head>
+<body>
+    <header>
+        <h1>PAPER - EU TAX FRAUD DETECTION</h1>
+    </header>
+        <p style="margin-left: 25px; margin-right: 25px;">
+            This page presents a simulation of how our software operates. As a vendor, you're required to upload the invoice intended for your customer. This invoice is displayed in the 'Income' section (located at the bottom left), where all revenues per customer are displayed. The table presents the VAT that is due and the subtotal of the invoice, which could be relevant for corporate taxation.
+            <br><br>There's no need for manual entry or calculations of all your invoices; the software extracts all the necessary information automatically when an invoice is uploaded using artificial inteligence (OCR). You can upload an invoice in the top section titled "Select a file to upload".
+            When a vendor uploads an invoice, it is at the same time automatically received and processed in the customer/buyer's tax system. For them it's a deductable cost and VAT. To simulate the scenario of how it looks from the buyers side, you can use the 'Cost' section and 'simulate Received Invoice'-button. This section displays all the company's costs, and deductable VAT for every invoice received.
+            <br><br>The outcome is a calculated payable (or receivable) VAT and a total amount which could be used to calculate corporate income tax (although CIT is outside the scope of our research). These total values are displayed on the right side of the top section. This system ensures efficiency and accuracy in handling company invoices and taxes.
+            <br><br>As written in our paper, the invoices need to contain certain values so that the software can identify them correctly. You can download 3 invoices here (<a href="/download_invoice">Download Invoice</a> <a href="/download_invoice_2">Download Invoice_2</a> <a href="/download_invoice_3">Download Invoice_3</a>)
+            with the correct values for testing. Of course, you can upload your own invoice as well, as long as they contain the words 'subtotal', 'VAT' and 'tax payer id' with the correct values and is a PDF-file. <b>Please be aware that it might take some time to extract the information after you click 'Upload'.</b>
+        </p>
+    <main>
+        <div class="main-container">
+            <div class="left-container">
+                </div>
+        
+                
+            </div>
+            
+            <div class="totals-container">
+            </div>
+        </div>
+        
+        <style>
+            .main-container {
+                display: flex;
+                justify-content: space-between;
+                width: 1000px;
+                margin: 0 auto;
+                padding: 0px;
+                box-sizing: border-box;
+            }
+            .container {
+                width: 100%;
+                margin-bottom: 20px;
+                padding: 20px;
+                box-sizing: border-box;
+                border: 1px solid #8fcae7; /* Light gray border */
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* Small shadow */
+                background-color: #8fcae7;
+            }
+            .invoices-container {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .invoices-container > div {
+                width: 49%; 
+                border: 1px solid #8fcae7; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+            }
+        
+        </style>
+            <body>
+                <div class="container" style="display: flex; justify-content: space-between;">
+                    <div>
+                        <h2>Select a file to upload</h2>
+                        <form action="/uploader" method="post" enctype="multipart/form-data">
+                            <input type="file" name="file"><br><br>
+                            <input type="submit" value="Upload">
+                        </form>
+                    </div>
+
+                    <div>
+                        <p><b>Total Cumulative VAT: {{ net_vat }}</p>
+                        <p>Total Cumulative SUBTOTAL: {{ net_subtotal }}</b></p>
+                    </div>
+                </div>
+        
+                <div class="invoices-container">
+                    <div class="container">
+                        <h2>Income</h2>
+                        <h5>This box displays all the invoices you have send to you clients. Their tax payer id will be displayed next to the subtotal and vat of their invoice.</h5>
+                        <table border="1" style="background-color: #ffffff;">
+                            <tr>
+                                <th>Tax payer id</th>
+                                <th>Cumulative VAT</th>
+                                <th>Cumulative SUBTOTAL</th>
+                            </tr>
+                            {% for id in vat_dict.keys() %}
+                                <tr>
+                                    <td>{{ id }}</td>
+                                    <td>{{ vat_dict[id] }}</td>
+                                    <td>{{ subtotal_dict[id] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+        
+                    <div class="container">
+                        <h2>Cost</h2>
+                        <h5>This box will display all the invoices that have been send to your company. The subtotals are deductable as expenses and the vat is deductable from the vat that you will have to pay.</h5>
+                        <table border="1" style="background-color: #ffffff;">
+                            <tr>
+                                <th>Tax payer id</th>
+                                <th>Total VAT</th>
+                                <th>Total SUBTOTAL</th>
+                            </tr>
+                            {% for key, value in received_vat_dict.items() %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>€{{ value }}</td>
+                                    <td>€{{ received_subtotal_dict[key] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <div class="box">
+                            <h3>Received Invoices</h3>
+                            <button onclick="location.href='/simulate_received_invoice'">Simulate Received Invoice</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </main>
+    <footer>
+        <p>Copyright © 2023 Ijen Hamel & Benjamin Mertens</p>
+    </footer>
+</body>
+</html>
+
+
+
